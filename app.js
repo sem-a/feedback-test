@@ -15,5 +15,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use("/api", require("./routes/index"));
+app.use("/api/user", require("./routes/user"));
 
 module.exports = app;
