@@ -10,4 +10,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id String @id @default(uuid())
+  name String
+  avatar String
+  email String
+  password String
+  created_at DateTime @default(now())
+  Proposal Proposal[]
+}
 
+model Proposal {
+  id String @id @default(uuid())
+  title String
+  text String 
+  voted Int
+  user_id String
+  author User @relation(fields: [user_id], references: [id])
+}
