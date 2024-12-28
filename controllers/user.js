@@ -17,31 +17,41 @@ const login = async (req, res) => {
       .json({ message: "Пожалуйста, заполните все обязательные поля!" });
   }
 
-  const user = await prisma.user.findFirst({
-    where: {
-        email
-    }
-  })
-  const isPasswordCorrect = user && (await bcrypt.compare(password, user.password))
-  const secret = process.env.JWT_SECRET
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        email,
+      },
+    });
+    const isPasswordCorrect =
+      user && (await bcrypt.compare(password, user.password));
+    const secret = process.env.JWT_SECRET;
 
-  if (user && isPasswordCorrect) {
-    return res.status(200).json({
+    if (user && isPasswordCorrect) {
+      return res.status(200).json({
         id: user.id,
         name: user.name,
         email: user.email,
-        token: jwt.sign({id: user.id}, secret, {expiresIn: '30d'})
-    })
-  } else {
-    return res.status(500).json({message: 'Неверно введен логин или пароль!'})
+        token: jwt.sign({ id: user.id }, secret, { expiresIn: "30d" }),
+      });
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Неверно введен логин или пароль!" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ message: "Возникла непредвиденная ошибка на сервере!" });
   }
 };
 
 /**
-* @route POST /api/user/reg
-* @desc регистрация пользователя
-* @access Public
-*/
+ * @route POST /api/user/reg
+ * @desc регистрация пользователя
+ * @access Public
+ */
 
 const reg = async (req, res) => {
   const { name, email, password, avatar } = req.body;
@@ -52,43 +62,50 @@ const reg = async (req, res) => {
       .json({ message: "Пожалуйста, заполните обязательные поля!" });
   }
 
-  const registerUser = await prisma.user.findFirst({
-    where: {
-      email,
-    },
-  });
-
-  if (registerUser) {
-    return res
-      .status(400)
-      .json({ message: "Пользователь с таким E-mail уже зарегистрирован" });
-  }
-
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-
-  const user = await prisma.user.create({
-    data: {
-      email,
-      name,
-      password: hashedPassword,
-      avatar,
-    },
-  });
-
-  const secret = process.env.JWT_SECRET;
-
-  if (user && secret) {
-    return res.status(201).json({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      token: jwt.sign({ id: user.id }, secret, { expiresIn: "30d" }),
+  try {
+    const registerUser = await prisma.user.findFirst({
+      where: {
+        email,
+      },
     });
-  } else {
+
+    if (registerUser) {
+      return res
+        .status(400)
+        .json({ message: "Пользователь с таким E-mail уже зарегистрирован" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const user = await prisma.user.create({
+      data: {
+        email,
+        name,
+        password: hashedPassword,
+        avatar,
+      },
+    });
+
+    const secret = process.env.JWT_SECRET;
+
+    if (user && secret) {
+      return res.status(201).json({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        token: jwt.sign({ id: user.id }, secret, { expiresIn: "30d" }),
+      });
+    } else {
+      return res
+        .status(500)
+        .json({ message: "Не удалось создать пользователя!" });
+    }
+  } catch (err) {
+    console.log(err);
     return res
       .status(500)
-      .json({ message: "Не удалось создать пользователя!" });
+      .json({ message: "Возникла непредвиденная ошибка на сервере!" });
   }
 };
 
@@ -104,5 +121,5 @@ const current = async (req, res) => {
 module.exports = {
   reg,
   current,
-  login
+  login,
 };

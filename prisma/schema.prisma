@@ -11,20 +11,28 @@ datasource db {
 }
 
 model User {
-  id String @id @default(uuid())
-  name String
-  avatar String
-  email String
-  password String
-  created_at DateTime @default(now())
-  Proposal Proposal[]
+  id         String     @id @default(uuid())
+  name       String
+  avatar     String
+  email      String
+  password   String
+  created_at DateTime   @default(now())
+  proposal   Proposal[]
+  voted      Voted[]
 }
 
 model Proposal {
-  id String @id @default(uuid())
-  title String
-  text String 
-  voted Int
+  id      String  @id @default(uuid())
+  title   String
+  text    String
+  voted   Voted[]
   user_id String
-  author User @relation(fields: [user_id], references: [id])
+  author  User    @relation(fields: [user_id], references: [id])
+}
+
+model Voted {
+  user_id     String   @id
+  proposal_id String
+  user        User     @relation(fields: [user_id], references: [id])
+  proposal    Proposal @relation(fields: [proposal_id], references: [id])
 }
