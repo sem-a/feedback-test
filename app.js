@@ -17,6 +17,6 @@ app.use(cookieParser());
 app.use("/api", require("./routes/index"));
 app.use("/api/user", require("./routes/user"));
 app.use("/api/proposal", require("./routes/proposal"));
-app.use("/api/voted", require("./routes/voted"));
+app.use("/api/vote", require("./routes/voted"));
 
 module.exports = app;
