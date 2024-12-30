@@ -25,6 +25,7 @@ const login = async (req, res) => {
     });
     const isPasswordCorrect =
       user && (await bcrypt.compare(password, user.password));
+
     const secret = process.env.JWT_SECRET;
 
     if (user && isPasswordCorrect) {

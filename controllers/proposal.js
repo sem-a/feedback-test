@@ -7,29 +7,30 @@ const { prisma } = require("../prisma/prisma-client");
  * @access Public
  */
 const proposal = async (req, res) => {
+  const { user_id, id } = req.query;
 
-  const {user_id, id} = req.params;
+  const where = {};
 
-  if(!user_id && proposal_id) {
-    const proposal = await prisma.proposal.findMany({
-      where: {
-        proposal_id
-      }
-    })
+  if (user_id) {
+    where.user_id = user_id;
+  }
+  if (id) {
+    where.id = id;
   }
 
+  console.log(where);
+
   try {
-    const proposal = await prisma.proposal.findMany()
+    const proposal = await prisma.proposal.findMany({
+      where: where,
+    });
 
-    if(!proposal) {
-      return res.status(400).json({message: 'Предложений не найдено!'})
-    }
-
-    return res.status(200).json(proposal)
-
-  } catch(err) {
-    console.log(err)
-    return res.status(500).json({message: 'Возникла непредвиденная ошибка на сервере!'})
+    return res.status(200).json(proposal);
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ message: "Возникла непредвиденная ошибка на сервере!" });
   }
 };
 
@@ -40,11 +41,29 @@ const proposal = async (req, res) => {
  * @access Public
  */
 const proposalCreate = async (req, res) => {
-  try {
+  const { title, text } = req.body;
 
-  } catch(err) {
-    console.log(err)
-    return res.status(500).json({message: 'Возникла непредвиденная ошибка на сервере!'})
+  if (!title || !text) {
+    return res
+      .status(400)
+      .json({ message: "Пожалуйста, заполните все обязательные поля!" });
+  }
+
+  try {
+    const proposal = await prisma.proposal.create({
+      data: {
+        title,
+        text,
+        user_id: req.user.id,
+      },
+    });
+
+    return res.status(201).json(proposal);
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ message: "Возникла непредвиденная ошибка на сервере!" });
   }
 };
 
@@ -55,18 +74,30 @@ const proposalCreate = async (req, res) => {
  * @access Public
  */
 const proposalDelete = async (req, res) => {
-  try {
+  const { id } = req.query;
 
-  } catch(err) {
-    console.log(err)
-    return res.status(500).json({message: 'Возникла непредвиденная ошибка на сервере!'})
+  if(!id) {
+    return res.status(400).json({ message: "Неверно заполнены поля запроса!" });
+  }
+
+  try {
+    const proposal = await prisma.proposal.delete({
+      where: {
+        id,
+      },
+    });
+
+    return res.status(201).json(proposal);
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ message: "Возникла непредвиденная ошибка на сервере!" });
   }
 };
 
 module.exports = {
   proposal,
-  proposalForId,
-  proposalForAuthor,
   proposalCreate,
   proposalDelete,
 };
