@@ -1,24 +1,4 @@
-@font-face {
-	font-family: 'Novelist'; 
-	src: url(./fonts/novelist.ttf); 
-}
-
-body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    background-color: #f6f6f4;
-    font-family: "Cormorant Garamond", serif;
-    font-size: 14px;
-    font-weight: 400;
-    color: #776F60;
-    font-display: swap;
-}
-
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-        monospace;
-}
-
+/* Reset and base styles  */
 * {
 	padding: 0px;
 	margin: 0px;

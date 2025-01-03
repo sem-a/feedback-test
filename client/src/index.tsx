@@ -5,13 +5,27 @@ import { PATHS } from "./paths";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
 import "./index.css";
+import { App } from "./App";
+import Proposal from "./pages/Proposal";
+import ProposalCreate from "./pages/ProposalCreate";
+import User from "./pages/User";
 
 const router = createBrowserRouter([
   {
     path: PATHS.home,
-    element: (
-      <div>fsd</div>
-    ),
+    element: <App />,
+  },
+  {
+    path: PATHS.proposal,
+    element: <Proposal />,
+  },
+  {
+    path: PATHS.proposal_create,
+    element: <ProposalCreate />,
+  },
+  {
+    path: `${PATHS.user}/:id`,
+    element: <User />,
   },
 ]);
 
